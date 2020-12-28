@@ -18,7 +18,7 @@ namespace ConsoleApp23
 
         private static void CreateZipFromDirectory(string src, string dst, CompressionLevel level = CompressionLevel.Optimal, bool includeBaseDirectory = true)
         {
-            System.IO.Compression.ZipFile.CreateFromDirectory(src, dst, level, includeBaseDirectory);
+            ZipFile.CreateFromDirectory(src, dst, level, includeBaseDirectory);
         }
 
     }

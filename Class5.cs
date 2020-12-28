@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsoleApp23
@@ -14,19 +15,39 @@ namespace ConsoleApp23
 
         public static void ExecuteShukusen(string work, string target)
         {
-            foreach (var files in Chunk(Directory.GetFiles(target)))
+            using (var rwlock = new ReaderWriterLockSlim())
             {
-                var arg = string.Join(" ", files.Select(file => $"\"{file}\""));
+                var targets = Chunk(Directory.GetFiles(target)).ToArray();
+                //var locked = 3;
+                //var index = 0;
 
-                // 縮小専用を実行
-                StartProcess(work, Path.Combine(work, ShukusenPath), arg);
+                targets.AsParallel().ForAll(files =>
+                {
+                    var arg = string.Join(" ", files.Select(file => $"\"{file}\""));
 
-                files.AsParallel().ForAll(src =>
+                    StartProcess(work, Path.Combine(work, ShukusenPath), arg);
+
+                    //if (locked < Interlocked.Increment(ref index))
+                    //{
+                    //    rwlock.EnterWriteLock();
+                    //}
+
+                    //var arg = string.Join(" ", files.Select(file => $"\"{file}\""));
+
+                    //StartProcess(work, Path.Combine(work, ShukusenPath), arg);
+
+                    //if (locked <= Interlocked.Decrement(ref index))
+                    //{
+                    //    rwlock.ExitWriteLock();
+                    //}
+                });
+
+                targets.AsParallel().ForAll(files => files.AsParallel().ForAll(file =>
                 {
                     // 縮小後ﾌｧｲﾙ名を作成
                     var dst = Path.Combine(
-                        Path.GetDirectoryName(src),
-                        $"s-{Path.GetFileNameWithoutExtension(src)}.jpg"
+                        Path.GetDirectoryName(file),
+                        $"s-{Path.GetFileNameWithoutExtension(file)}.jpg"
                     );
 
                     var fi = new FileInfo(dst);
@@ -34,7 +55,7 @@ namespace ConsoleApp23
                     if (fi.Exists && fi.Length != 0)
                     {
                         // 縮小が成功していたら元ﾌｧｲﾙを削除
-                        File.Delete(src);
+                        File.Delete(file);
                     }
                     else
                     {
@@ -42,13 +63,13 @@ namespace ConsoleApp23
                         if (fi.Exists) fi.Delete();
 
                         // 縮小前のﾌｧｲﾙをﾘﾈｰﾑ
-                        File.Move(src, dst);
+                        File.Move(file, dst);
                     }
-                });
+                }));
             }
         }
 
-        private static IEnumerable<IEnumerable<string>> Chunk(IEnumerable<string> source)
+        private static IEnumerable<string[]> Chunk(IEnumerable<string> source)
         {
             var target = new List<string>();
 
@@ -57,7 +78,7 @@ namespace ConsoleApp23
                 if (8000 < target.Sum(a => a.Length + 3))
                 {
                     // ｺﾏﾝﾄﾞﾗｲﾝ引数の上限は8192文字なので、それを超えない範囲で配列を分割する。
-                    yield return target;
+                    yield return target.ToArray();
 
                     target.Clear();
                 }
@@ -67,7 +88,7 @@ namespace ConsoleApp23
 
             if (target.Any())
             {
-                yield return target;
+                yield return target.ToArray();
             }
         }
 
@@ -79,17 +100,20 @@ namespace ConsoleApp23
         /// <param name="argument">ﾌﾟﾛｾｽに渡す実行引数</param>
         private static void StartProcess(string work, string file, string argument)
         {
-            var process = new ProcessStartInfo();
+            var info = new ProcessStartInfo();
 
-            process.WorkingDirectory = work;
-            process.FileName = file;
-            process.Arguments = argument;
-            process.UseShellExecute = false;
-            process.CreateNoWindow = true;
-            process.ErrorDialog = true;
-            process.RedirectStandardError = true;
+            info.WorkingDirectory = work;
+            info.FileName = file;
+            info.Arguments = argument;
+            info.UseShellExecute = false;
+            info.CreateNoWindow = true;
+            info.ErrorDialog = true;
+            info.RedirectStandardError = true;
 
-            Process.Start(process).WaitForExit();
+            using (var process = Process.Start(info))
+            {
+                process.WaitForExit();
+            }
         }
 
     }
