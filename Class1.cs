@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp23
 {
+    /// <summary>
+    /// ﾙｰﾄﾃﾞｨﾚｸﾄﾘをﾕﾆｰｸな名前にする。
+    /// </summary>
     class Class1
     {
         public static string RenameDirectory(string value)

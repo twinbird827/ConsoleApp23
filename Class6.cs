@@ -12,6 +12,7 @@ namespace ConsoleApp23
     {
         public static void CreateZipFromDirectory(string src)
         {
+            Program.FileDelete($"{src}.zip");
             CreateZipFromDirectory(src, $"{src}.zip");
             Program.DirectoryDelete(new DirectoryInfo(src));
         }

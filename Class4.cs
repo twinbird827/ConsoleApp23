@@ -10,42 +10,35 @@ namespace ConsoleApp23
 {
     class Class4
     {
-        private const string Unique = "!3!";
-
         public static void RenameAllFile(string target)
         {
-            RenameAllDir(target, "", target);
+            int index = 0;
+            var dirs = RenameAllDir(target).ToArray();
+            var targets = new[] { target }.Concat(dirs);
 
-            foreach (var dir in Directory.GetDirectories(target))
+            foreach (var dir in targets)
+            foreach (var file in Directory.GetFiles(dir).OrderBy(s => GetOrderBy(s)).ToArray())
+            {
+                var name = string.Format("{0,0:D5}", ++index);
+                var exte = Path.GetExtension(file);
+                File.Move(file, Path.Combine(target, $"{name}{exte}"));
+            }
+
+            foreach (var dir in dirs)
             {
                 Program.DirectoryDelete(new DirectoryInfo(dir));
             }
-
-            foreach (var r in Directory.GetFiles(target).Select((s, i) => new { s, i }).ToArray())
-            {
-                var file = r.s;
-                var dstn = string.Format("{0,0:D5}", r.i);
-                File.Move(file, Path.Combine(target, $"{dstn}{Path.GetExtension(file)}"));
-            }
         }
 
-        private static void RenameAllDir(string basedir, string identifier, string target)
+        private static IEnumerable<string> RenameAllDir(string target)
         {
-            identifier = $"{identifier}{Unique}";
-
-            foreach (var r in Directory.GetFiles(target).Select((s, i) => new { s, i }).ToArray())
+            foreach (var dir in Directory.GetDirectories(target).OrderBy(s => GetOrderBy(s)))
             {
-                var file = new FileInfo(r.s);
-                var dstn = string.Format("{0,0:D5}", r.i);
-                file.MoveTo(Path.Combine(basedir, $"{identifier}{dstn}{Path.GetExtension(file.Extension)}"));
-            }
-
-            foreach (var r in Directory.GetDirectories(target).OrderBy(s => GetOrderBy(s)).Select((s, i) => new { s, i }).ToArray())
-            {
-                var src = r.s;
-                var dir = $"{identifier}{$"{r.i}".PadLeft(3, '0')}";
-
-                RenameAllDir(basedir, dir, src);
+                yield return dir;
+                foreach (var child in RenameAllDir(dir))
+                {
+                    yield return child;
+                }
             }
         }
 

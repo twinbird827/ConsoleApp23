@@ -28,11 +28,21 @@ namespace ConsoleApp23
                 return;
             }
 
+            // 戻り値
+            var normal = true;
+
             try
             {
                 // 実行ﾊﾟﾗﾒｰﾀに対して処理実行
-                args.AsParallel()
-                    .ForAll(arg => Execute(work, arg, isExeShukusen));
+                foreach (var arg in args)
+                {
+                    normal = normal && Execute(work, arg, isExeShukusen);
+                }
+
+                if (!normal)
+                {
+                    Console.ReadLine();
+                }
             }
             catch (Exception ex)
             {
@@ -74,7 +84,7 @@ namespace ConsoleApp23
         /// <param name="work">作業ﾃﾞｨﾚｸﾄﾘ</param>
         /// <param name="target">処理対象ﾌｧｲﾙ(ﾌｫﾙﾀﾞ)</param>
         /// <param name="isExeShukusen">縮小専用を実行するかどうか</param>
-        private static void Execute(string work, string target, bool isExeShukusen)
+        private static bool Execute(string work, string target, bool isExeShukusen)
         {
             Console.WriteLine($"target:{target}");
 
@@ -83,7 +93,7 @@ namespace ConsoleApp23
                 if (!Directory.Exists(target))
                 {
                     Console.WriteLine($"* ﾌｫﾙﾀﾞ以外のﾊﾟｽはｽｷｯﾌﾟします。");
-                    return;
+                    return true;
                 }
 
                 Console.WriteLine($"* ﾌｫﾙﾀﾞ名を整形します");
@@ -106,16 +116,23 @@ namespace ConsoleApp23
 
                 Console.WriteLine($"* 圧縮処理を開始します");
                 Class6.CreateZipFromDirectory(target);
+                return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
                 Console.WriteLine("ｴﾗｰが発生したので該当ﾌｫﾙﾀﾞの処理を中断して続行します。");
+                return false;
             }
         }
 
         public static void DirectoryDelete(DirectoryInfo info)
         {
+            if (!info.Exists)
+            {
+                return;
+            }
+
             // ﾃﾞｨﾚｸﾄﾘ内のﾌｧｲﾙ、またはﾃﾞｨﾚｸﾄﾘを削除可能な属性にする。
             foreach (var file in info.GetFileSystemInfos("*", SearchOption.AllDirectories))
             {
@@ -133,5 +150,25 @@ namespace ConsoleApp23
             info.Delete(true);
         }
 
+        public static void DirectoryDelete(string dir)
+        {
+            DirectoryDelete(new DirectoryInfo(dir));
+        }
+
+        public static void FileDelete(FileInfo info)
+        {
+            if (!info.Exists)
+            {
+                return;
+            }
+
+            info.Attributes = FileAttributes.Normal;
+            info.Delete();
+        }
+
+        public static void FileDelete(string file)
+        {
+            FileDelete(new FileInfo(file));
+        }
     }
 }
