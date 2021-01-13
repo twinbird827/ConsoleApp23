@@ -47,7 +47,7 @@ namespace ConsoleApp23
                     // 縮小後ﾌｧｲﾙ名を作成
                     var dst = Path.Combine(
                         Path.GetDirectoryName(file),
-                        $"s-{Path.GetFileNameWithoutExtension(file)}.jpg"
+                        $"s-{Program.GetFileNameWithoutExtension(file)}.jpg"
                     );
 
                     var fi = new FileInfo(dst);

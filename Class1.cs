@@ -30,7 +30,7 @@ namespace ConsoleApp23
 
         private static string GetWithoutExtension(string value)
         {
-            var result = Path.GetFileNameWithoutExtension(value);
+            var result = Program.GetFileNameWithoutExtension(value);
             if (result == value)
             {
                 return result;

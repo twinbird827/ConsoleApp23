@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ConsoleApp23
@@ -169,6 +170,11 @@ namespace ConsoleApp23
         public static void FileDelete(string file)
         {
             FileDelete(new FileInfo(file));
+        }
+
+        public static string GetFileNameWithoutExtension(string file)
+        {
+            return Regex.Replace(file, @"\.[a-zA-Z]{1,5}$", p => "");
         }
     }
 }

@@ -23,7 +23,7 @@ namespace ConsoleApp23
                 }
                 else if (src != dst)
                 {
-                    File.Move(file, Path.Combine(Path.GetDirectoryName(file), $"{Path.GetFileNameWithoutExtension(file)}{dst}"));
+                    File.Move(file, Path.Combine(Path.GetDirectoryName(file), $"{Program.GetFileNameWithoutExtension(file)}{dst}"));
                 }
             }
 
