@@ -174,6 +174,7 @@ namespace ConsoleApp23
 
         public static string GetFileNameWithoutExtension(string file)
         {
+            file = file.Contains(@"\") ? Path.GetFileName(file) : file;
             return Regex.Replace(file, @"\.[a-zA-Z]{1,5}$", p => "");
         }
     }
