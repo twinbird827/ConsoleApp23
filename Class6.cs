@@ -12,9 +12,9 @@ namespace ConsoleApp23
     {
         public static void CreateZipFromDirectory(string src)
         {
-            Program.FileDelete($"{src}.zip");
+            MyIO.FileDelete($"{src}.zip");
             CreateZipFromDirectory(src, $"{src}.zip");
-            Program.DirectoryDelete(new DirectoryInfo(src));
+            MyIO.DirectoryDelete(new DirectoryInfo(src));
         }
 
         private static void CreateZipFromDirectory(string src, string dst, CompressionLevel level = CompressionLevel.Optimal, bool includeBaseDirectory = true)

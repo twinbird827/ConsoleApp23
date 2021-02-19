@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace ConsoleApp23
 {
     class Program
     {
+
         static void Main(string[] args)
         {
             // 作業ﾃﾞｨﾚｸﾄﾘを取得
@@ -125,51 +127,6 @@ namespace ConsoleApp23
                 Console.WriteLine("ｴﾗｰが発生したので該当ﾌｫﾙﾀﾞの処理を中断して続行します。");
                 return false;
             }
-        }
-
-        public static void DirectoryDelete(DirectoryInfo info)
-        {
-            if (!info.Exists)
-            {
-                return;
-            }
-
-            // ﾃﾞｨﾚｸﾄﾘ内のﾌｧｲﾙ、またはﾃﾞｨﾚｸﾄﾘを削除可能な属性にする。
-            foreach (var file in info.GetFileSystemInfos("*", SearchOption.AllDirectories))
-            {
-                if (file.Attributes.HasFlag(FileAttributes.Directory))
-                {
-                    file.Attributes = FileAttributes.Directory;
-                }
-                else
-                {
-                    file.Attributes = FileAttributes.Normal;
-                }
-            }
-
-            // ﾃﾞｨﾚｸﾄﾘの削除
-            info.Delete(true);
-        }
-
-        public static void DirectoryDelete(string dir)
-        {
-            DirectoryDelete(new DirectoryInfo(dir));
-        }
-
-        public static void FileDelete(FileInfo info)
-        {
-            if (!info.Exists)
-            {
-                return;
-            }
-
-            info.Attributes = FileAttributes.Normal;
-            info.Delete();
-        }
-
-        public static void FileDelete(string file)
-        {
-            FileDelete(new FileInfo(file));
         }
 
         public static string GetFileNameWithoutExtension(string file)

@@ -39,14 +39,14 @@ namespace ConsoleApp23
         {
             if (IgnoreDirectory.Any(dir => dir == Path.GetFileName(target)))
             {
-                Program.DirectoryDelete(target);
+                MyIO.DirectoryDelete(target);
             }
 
             foreach (var file in Directory.GetFiles(target))
             {
                 if (IgnoreExtension.Any(ext => file.ToLower().EndsWith(ext)))
                 {
-                    Program.FileDelete(file);
+                    MyIO.FileDelete(file);
                 }
             }
 

@@ -19,11 +19,11 @@ namespace ConsoleApp23
                 var dst = GetExtension(file)?.ToLower();
                 if (dst == null)
                 {
-                    Program.FileDelete(file);
+                    MyIO.FileDelete(file);
                 }
                 else if (src != dst)
                 {
-                    File.Move(file, Path.Combine(Path.GetDirectoryName(file), $"{Program.GetFileNameWithoutExtension(file)}{dst}"));
+                    MyIO.FileMove(file, Path.Combine(Path.GetDirectoryName(file), $"{Program.GetFileNameWithoutExtension(file)}{dst}"));
                 }
             }
 

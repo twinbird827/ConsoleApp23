@@ -26,7 +26,7 @@ namespace ConsoleApp23
 
             foreach (var dir in dirs)
             {
-                Program.DirectoryDelete(new DirectoryInfo(dir));
+                MyIO.DirectoryDelete(dir);
             }
         }
 
